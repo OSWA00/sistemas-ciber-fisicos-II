@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/ros,labview,matlab,python,c++
-# Edit at https://www.toptal.com/developers/gitignore?templates=ros,labview,matlab,python,c++
+# Created by https://www.toptal.com/developers/gitignore/api/c++,ros,labview,python,jupyternotebooks
+# Edit at https://www.toptal.com/developers/gitignore?templates=c++,ros,labview,python,jupyternotebooks
 
 ### C++ ###
 # Prerequisites
@@ -35,6 +35,20 @@
 *.out
 *.app
 
+### JupyterNotebooks ###
+# gitignore template for Jupyter Notebooks
+# website: http://jupyter.org/
+
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Remove previous ipynb_checkpoints
+#   git rm -r .ipynb_checkpoints/
+
 ### LabVIEW ###
 # Libraries
 *.lvlibp
@@ -49,39 +63,6 @@
 *.aliases
 *.lvlps
 .cache/
-
-### MATLAB ###
-# Windows default autosave extension
-*.asv
-
-# OSX / *nix default autosave extension
-*.m~
-
-# Compiled MEX binaries (all platforms)
-*.mex*
-
-# Packaged app and toolbox files
-*.mlappinstall
-*.mltbx
-
-# Generated helpsearch folders
-helpsearch*/
-
-# Simulink code generation folders
-slprj/
-sccprj/
-
-# Matlab code generation folders
-codegen/
-
-# Simulink autosave extension
-*.autosave
-
-# Simulink cache files
-*.slxc
-
-# Octave session info
-octave-workspace
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
@@ -161,11 +142,8 @@ docs/_build/
 target/
 
 # Jupyter Notebook
-.ipynb_checkpoints
 
 # IPython
-profile_default/
-ipython_config.py
 
 # pyenv
 #   For a library or package, you might want to ignore these files since the code is
@@ -295,5 +273,4 @@ qtcreator-*
 # Catkin custom files
 CATKIN_IGNORE
 
-# End of https://www.toptal.com/developers/gitignore/api/ros,labview,matlab,python,c++
-
+# End of https://www.toptal.com/developers/gitignore/api/c++,ros,labview,python,jupyternotebooks
