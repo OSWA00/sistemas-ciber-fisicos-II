@@ -8,7 +8,6 @@ struct Encoder
   uint32_t last_state_A;
   uint32_t current_state_A;
   uint32_t current_state_B;
-
 } Encoder_1;
 
 struct Motor
@@ -20,13 +19,14 @@ struct Motor
   uint8_t foward_pin;
   uint8_t reverse_pin;
   uint8_t enable_pin;
+  uint8_t pwm_channel;
 } Motor_1;
 
 /** TODO
  * [x] Read encoder
  * [x] Convert pulses to degrees
  * [x] Implement P controller on radians
- * [] Send u to PWM
+ * [X] Send u to PWM
  *
  * After controller synthonization
  * [] Receive reference from external source
@@ -40,7 +40,6 @@ void send_power(Motor &motor, float_t speed);
 
 void setup()
 {
-  // put your setup code here, to run once:
   Serial.begin(115200);
 
   Encoder_1.channel_A = 0x1;
@@ -49,6 +48,8 @@ void setup()
   Motor_1.foward_pin = 0x1B;
   Motor_1.reverse_pin = 0x1A;
   Motor_1.enable_pin = 0xE;
+  Motor_1.pwm_channel = 0x0;
+  Motor_1.target_position = M_PI / float_t(2.0); //!  Remove on release
 
   init_encoder(Encoder_1);
   init_motor(Motor_1);
@@ -56,7 +57,6 @@ void setup()
 
 void loop()
 {
-  // put your main code here, to run repeatedly:
   update_encoder_state(Encoder_1);
   Motor_1.current_position = convert_pulses_to_radians(Encoder_1.counter);
   send_power(Motor_1, calculate_u(Motor_1));
@@ -120,17 +120,15 @@ float_t calculate_u(Motor &motor)
 
 void init_motor(Motor &motor)
 {
-
   pinMode(motor.foward_pin, OUTPUT);
   pinMode(motor.reverse_pin, OUTPUT);
   pinMode(motor.enable_pin, OUTPUT);
 
   uint32_t freq = 0x3E8;
-  uint8_t channel = 0x0;
   uint8_t resolution_bits = 0x10;
 
-  ledcSetup(channel, freq, resolution_bits);
-  ledcAttachPin(motor.enable_pin, channel);
+  ledcSetup(motor.pwm_channel, freq, resolution_bits);
+  ledcAttachPin(motor.enable_pin, motor.pwm_channel);
 
   digitalWrite(motor.foward_pin, LOW);
   digitalWrite(motor.reverse_pin, LOW);
@@ -138,8 +136,6 @@ void init_motor(Motor &motor)
 
 void send_power(Motor &motor, float_t u)
 {
-  uint8_t pwm_channel = 0x0;
-
   if (motor.foward)
   {
     digitalWrite(motor.foward_pin, HIGH);
@@ -151,7 +147,7 @@ void send_power(Motor &motor, float_t u)
     digitalWrite(motor.reverse_pin, HIGH);
   }
 
-  uint32_t duty_cycle = map(u, 0x0, 0x1, 0x0, 0xFFFF);
+  uint32_t duty_cycle = map(u, 0x0, 0x1, 0x0, 0xFFFF); // 16 bit PWM
 
-  ledcWrite(pwm_channel, duty_cycle);
+  ledcWrite(motor.pwm_channel, duty_cycle);
 }
