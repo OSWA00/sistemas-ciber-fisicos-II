@@ -1,1 +1,0 @@
-#define motor 0x3
