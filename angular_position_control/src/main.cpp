@@ -14,11 +14,16 @@ struct Motor
 {
   float_t current_position;
   float_t target_position;
+
   float_t proportional_gain;
-  bool foward;
+  float_t derivative_gain;
+  float_t last_error;
+
+  uint32_t last_time;
+  uint32_t current_time;
+
   uint8_t foward_pin;
   uint8_t reverse_pin;
-  uint8_t enable_pin;
   uint8_t pwm_channel;
 } Motor_1;
 
@@ -40,16 +45,17 @@ void send_power(Motor &motor, float_t speed);
 
 void setup()
 {
-  Serial.begin(115200);
+  Serial.begin(9600);
 
-  Encoder_1.channel_A = 0x1;
-  Encoder_1.channel_B = 0X2;
+  Encoder_1.channel_A = 0x2;
+  Encoder_1.channel_B = 0XF;
 
-  Motor_1.foward_pin = 0x1B;
-  Motor_1.reverse_pin = 0x1A;
-  Motor_1.enable_pin = 0xE;
+  Motor_1.foward_pin = 0x4;
+  Motor_1.reverse_pin = 0x17;
+
   Motor_1.pwm_channel = 0x0;
   Motor_1.target_position = M_PI / float_t(2.0); //!  Remove on release
+  Motor_1.last_error = 0.0;
 
   init_encoder(Encoder_1);
   init_motor(Motor_1);
@@ -58,8 +64,8 @@ void setup()
 void loop()
 {
   update_encoder_state(Encoder_1);
-  Motor_1.current_position = convert_pulses_to_radians(Encoder_1.counter);
-  send_power(Motor_1, calculate_u(Motor_1));
+  // Motor_1.current_position = convert_pulses_to_radians(Encoder_1.counter);
+  // send_power(Motor_1, calculate_u(Motor_1));
 }
 
 void init_encoder(Encoder &encoder)
@@ -84,11 +90,11 @@ void update_encoder_state(Encoder &encoder)
     {
       encoder.counter--;
     }
-    //! Remove on release
-    Serial.print("Positon: ");
-    Serial.println(encoder.counter);
   }
   encoder.last_state_A = encoder.current_state_A;
+  //! Remove on release
+  Serial.print("Positon: ");
+  Serial.println(encoder.counter);
 }
 
 float_t convert_pulses_to_radians(int32_t pulse_counter)
@@ -106,15 +112,23 @@ float_t convert_pulses_to_radians(int32_t pulse_counter)
 
 float_t calculate_u(Motor &motor)
 {
-  float_t angle_error = motor.target_position - motor.current_position;
-  motor.foward = angle_error < M_PI; // Check if angle_error > 180
+  motor.current_time = millis();
+  uint32_t delta_time = motor.current_time - motor.last_time;
+  motor.last_time = motor.current_time;
 
-  if (!motor.foward)
+  float_t angle_error = motor.current_position - motor.target_position;
+  float_t derivative_error = angle_error - motor.last_error / delta_time;
+  motor.last_error = angle_error;
+
+  float_t u = motor.proportional_gain * angle_error + motor.derivative_gain * derivative_error;
+  if (u > float_t(1.0))
   {
-    angle_error = angle_error - M_PI;
+    u = 1.0;
   }
-
-  float_t u = -motor.proportional_gain * angle_error;
+  if (u < float_t(-1.0))
+  {
+    u = -1.0;
+  }
   return u;
 }
 
@@ -122,32 +136,37 @@ void init_motor(Motor &motor)
 {
   pinMode(motor.foward_pin, OUTPUT);
   pinMode(motor.reverse_pin, OUTPUT);
-  pinMode(motor.enable_pin, OUTPUT);
 
   uint32_t freq = 0x3E8;
   uint8_t resolution_bits = 0x10;
 
   ledcSetup(motor.pwm_channel, freq, resolution_bits);
-  ledcAttachPin(motor.enable_pin, motor.pwm_channel);
+  ledcAttachPin(motor.foward_pin, motor.pwm_channel);
+  ledcAttachPin(motor.reverse_pin, motor.pwm_channel);
 
   digitalWrite(motor.foward_pin, LOW);
   digitalWrite(motor.reverse_pin, LOW);
+
+  motor.last_time = millis();
+
+  motor.proportional_gain = 0.1;
+  motor.derivative_gain = 0.01;
 }
 
-void send_power(Motor &motor, float_t u)
-{
-  if (motor.foward)
-  {
-    digitalWrite(motor.foward_pin, HIGH);
-    digitalWrite(motor.reverse_pin, LOW);
-  }
-  else
-  {
-    digitalWrite(motor.foward_pin, LOW);
-    digitalWrite(motor.reverse_pin, HIGH);
-  }
+// void send_power(Motor &motor, float_t u)
+// {
+//   if (motor.foward)
+//   {
+//     analogWrite(motor.foward_pin, HIGH);
+//     digitalWrite(motor.reverse_pin, LOW);
+//   }
+//   else
+//   {
+//     digitalWrite(motor.foward_pin, LOW);
+//     digitalWrite(motor.reverse_pin, HIGH);
+//   }
 
-  uint32_t duty_cycle = map(u, 0x0, 0x1, 0x0, 0xFFFF); // 16 bit PWM
+//   uint32_t duty_cycle = map(u, 0x0, 0x1, 0x0, 0xFFFF); // 16 bit PWM
 
-  ledcWrite(motor.pwm_channel, duty_cycle);
-}
+//   ledcWrite(motor.pwm_channel, duty_cycle);
+// }
