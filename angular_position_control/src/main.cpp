@@ -5,9 +5,6 @@ struct Encoder
   uint8_t channel_A;
   uint8_t channel_B;
   int32_t counter;
-  uint32_t last_state_A;
-  uint32_t current_state_A;
-  uint32_t current_state_B;
 } Encoder_1;
 
 struct Motor
@@ -38,7 +35,7 @@ struct Motor
  */
 void init_encoder(Encoder &encoder);
 void init_motor(Motor &motor);
-void update_encoder_state(Encoder &encoder);
+void encoder_1_ISR_handler();
 float_t convert_pulses_to_radians(int32_t pulse_counter);
 float_t calculate_u(Motor &motor);
 void send_power(Motor &motor, float_t speed);
@@ -58,43 +55,23 @@ void setup()
   Motor_1.last_error = 0.0;
 
   init_encoder(Encoder_1);
+  attachInterrupt(digitalPinToInterrupt(Encoder_1.channel_A), encoder_1_ISR_handler, RISING);
+
   init_motor(Motor_1);
 }
 
 void loop()
 {
-  update_encoder_state(Encoder_1);
-  // Motor_1.current_position = convert_pulses_to_radians(Encoder_1.counter);
-  // send_power(Motor_1, calculate_u(Motor_1));
+  Motor_1.current_position = convert_pulses_to_radians(Encoder_1.counter);
+  Serial.println(Motor_1.current_position);
+  //  send_power(Motor_1, calculate_u(Motor_1));
 }
 
 void init_encoder(Encoder &encoder)
 {
-  pinMode(encoder.channel_A, INPUT);
+  pinMode(encoder.channel_A, INPUT_PULLUP);
   pinMode(encoder.channel_B, INPUT);
-  encoder.counter = 0;
-  encoder.last_state_A = digitalRead(encoder.channel_A);
-}
-
-void update_encoder_state(Encoder &encoder)
-{
-  encoder.current_state_A = digitalRead(encoder.channel_A);
-  if (encoder.current_state_A != encoder.last_state_A)
-  {
-    encoder.current_state_B = digitalRead(encoder.channel_B);
-    if (encoder.current_state_B != encoder.current_state_A)
-    {
-      encoder.counter++;
-    }
-    else
-    {
-      encoder.counter--;
-    }
-  }
-  encoder.last_state_A = encoder.current_state_A;
-  //! Remove on release
-  Serial.print("Positon: ");
-  Serial.println(encoder.counter);
+  encoder.counter = 0x0;
 }
 
 float_t convert_pulses_to_radians(int32_t pulse_counter)
@@ -138,7 +115,7 @@ void init_motor(Motor &motor)
   pinMode(motor.reverse_pin, OUTPUT);
 
   uint32_t freq = 0x3E8;
-  uint8_t resolution_bits = 0x10;
+  uint8_t resolution_bits = 0x8;
 
   ledcSetup(motor.pwm_channel, freq, resolution_bits);
   ledcAttachPin(motor.foward_pin, motor.pwm_channel);
@@ -153,20 +130,28 @@ void init_motor(Motor &motor)
   motor.derivative_gain = 0.01;
 }
 
-// void send_power(Motor &motor, float_t u)
-// {
-//   if (motor.foward)
-//   {
-//     analogWrite(motor.foward_pin, HIGH);
-//     digitalWrite(motor.reverse_pin, LOW);
-//   }
-//   else
-//   {
-//     digitalWrite(motor.foward_pin, LOW);
-//     digitalWrite(motor.reverse_pin, HIGH);
-//   }
+void send_power(Motor &motor, float_t u)
+{
+  if (u > 0)
+  {
+    digitalWrite(motor.foward_pin, LOW);
+    ledcWrite(motor.pwm_channel, u);
+  }
+  else
+  {
+    digitalWrite(motor.reverse_pin, LOW);
+    ledcWrite(motor.foward_pin, u);
+  }
+}
 
-//   uint32_t duty_cycle = map(u, 0x0, 0x1, 0x0, 0xFFFF); // 16 bit PWM
-
-//   ledcWrite(motor.pwm_channel, duty_cycle);
-// }
+void encoder_1_ISR_handler()
+{
+  if (digitalRead(Encoder_1.channel_B) == LOW)
+  {
+    Encoder_1.counter++;
+  }
+  else
+  {
+    Encoder_1.counter--;
+  }
+}
