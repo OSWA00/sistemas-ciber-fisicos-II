@@ -53,7 +53,7 @@ void setup()
 
   Motor_1.pwm_channel_foward = 0x0;
   Motor_1.pwm_channel_reverse = 0x1;
-  Motor_1.target_position = -M_PI / 2.0; //!  Remove on release
+  Motor_1.target_position = M_PI; //!  Remove on release
   Motor_1.last_error = 0.0;
 
   init_encoder(Encoder_1);
@@ -125,7 +125,7 @@ void init_motor(Motor &motor)
   motor.last_time = millis();
 
   motor.proportional_gain = 0.1;
-  motor.derivative_gain = 0.01;
+  motor.derivative_gain = 0.1;
 }
 
 void send_power(Motor &motor, float_t u)
