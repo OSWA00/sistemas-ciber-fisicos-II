@@ -25,15 +25,6 @@ struct Motor
   uint8_t pwm_channel_reverse;
 } Motor_1;
 
-/** TODO
- * [x] Read encoder
- * [x] Convert pulses to degrees
- * [x] Implement P controller on radians
- * [X] Send u to PWM
- *
- * After controller synthonization
- * [] Receive reference from external source
- */
 void init_encoder(Encoder &encoder);
 void init_motor(Motor &motor);
 void encoder_1_ISR_handler();
