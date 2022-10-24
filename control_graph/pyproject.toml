@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "control-graph"
+version = "0.1.0"
+description = ""
+authors = ["oswaldohernandez <oswaldohernandez@protonmail.com>"]
+readme = "README.md"
+packages = [{include = "control_graph"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+numpy = "^1.23.4"
+matplotlib = "^3.6.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
