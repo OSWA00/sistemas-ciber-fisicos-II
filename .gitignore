@@ -275,3 +275,7 @@ qtcreator-*
 CATKIN_IGNORE
 
 # End of https://www.toptal.com/developers/gitignore/api/c++,ros,labview,python,jupyternotebooks
+
+butterfield.png
+
+*.lock

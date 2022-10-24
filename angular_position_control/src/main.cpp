@@ -83,6 +83,7 @@ float_t calculate_u(Motor &motor)
   float_t angle_error = motor.current_position - motor.target_position;
   float_t derivative_error = angle_error - motor.last_error / delta_time;
   motor.last_error = angle_error;
+  Serial.println(angle_error);
 
   float_t u = motor.proportional_gain * angle_error + motor.derivative_gain * derivative_error;
   if (u > float_t(1.0))
