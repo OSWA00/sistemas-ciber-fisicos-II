@@ -44,7 +44,7 @@ void setup()
 
     Motor_1.pwm_channel_foward = 0x0;
     Motor_1.pwm_channel_reverse = 0x1;
-    Motor_1.target_position = M_PI; //!  Remove on release
+    Motor_1.target_position = -M_PI; //!  Remove on release
     Motor_1.last_error = 0.0;
 
     init_encoder(Encoder_1);
@@ -83,7 +83,13 @@ float_t calculate_u(Motor &motor)
     float_t angle_error = motor.current_position - motor.target_position;
     float_t derivative_error = angle_error - motor.last_error / delta_time;
     motor.last_error = angle_error;
-    Serial.println(angle_error);
+
+    if (angle_error < M_PI / 25.0 && angle_error > -M_PI / 25.0)
+    {
+        angle_error = 0.0;
+    }
+
+    float_t error_percentage = 100.0 * angle_error / motor.target_position;
 
     float_t u = motor.proportional_gain * angle_error + motor.derivative_gain * derivative_error;
     if (u > float_t(1.0))
@@ -117,7 +123,7 @@ void init_motor(Motor &motor)
     motor.last_time = millis();
 
     motor.proportional_gain = 0.1;
-    motor.derivative_gain = 0.1;
+    motor.derivative_gain = 50;
 }
 
 void send_power(Motor &motor, float_t u)

@@ -18,6 +18,11 @@ if __name__ == "__main__":
 
         new_data.append(new_val)
 
+    new_data = np.array(new_data)
+
+    new_data = new_data[50:850]
+    new_data[:75] = new_data[:75] - 10
+
     reference = np.zeros(len(new_data))
 
     plt.plot(new_data)
