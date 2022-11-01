@@ -16,20 +16,44 @@ class Transformations:
 
         new_img = np.zeros(img.shape)
 
-        for x in range(0, width):
-            for y in range(0, height):
-                for z in range(0, channels):
-                    new_x = int(x * np.cos(deg) - y * np.sin(deg))
-                    new_y = int(x * np.sin(deg) + y * np.cos(deg))
-                    new_img[new_x, new_y, z] = img[x, y, z]
+        for x_cor in range(0, width):
+            for y_cor in range(0, height):
+                for z_cor in range(0, channels):
+                    new_x = int(x_cor * np.cos(deg) - y_cor * np.sin(deg))
+                    new_y = int(x_cor * np.sin(deg) + y_cor * np.cos(deg))
+                    new_img[new_x, new_y, z_cor] = img[x_cor, y_cor, z_cor]
 
         return new_img
 
-    def flip_X(self, img):
-        pass
+    def flip_x(self, img):
+        """Flips image over X axis"""
+        height, width, channels = img.shape
 
-    def flip_Y(self, img):
-        pass
+        new_img = np.zeros(img.shape)
+
+        for x_cor in range(0, width):
+            for y_cor in range(0, height):
+                for z_cor in range(0, channels):
+                    new_x = x_cor
+                    new_y = -y_cor
+                    new_img[new_x, new_y, z_cor] = img[x_cor, y_cor, z_cor]
+
+        return new_img
+
+    def flip_y(self, img):
+        """Flips image over Y axis"""
+        height, width, channels = img.shape
+
+        new_img = np.zeros(img.shape)
+
+        for x_cor in range(0, width):
+            for y_cor in range(0, height):
+                for z_cor in range(0, channels):
+                    new_x = -x_cor
+                    new_y = y_cor
+                    new_img[new_x, new_y, z_cor] = img[x_cor, y_cor, z_cor]
+
+        return new_img
 
     def flip_X_Y(self, img):
         pass

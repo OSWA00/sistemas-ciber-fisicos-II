@@ -12,9 +12,17 @@ if __name__ == "__main__":
     TransformationHandler = Transformations()
     img = cv.imread("data/logo.png")
 
-    for rotation in rotation_config:
-        rotated = TransformationHandler.rotation(img=img, deg=rotation)
-        path = f"data/rotated/{rotation}.jpg"
-        cv.imwrite(path, rotated)
+    # for rotation in rotation_config:
+    #     rotated = TransformationHandler.rotation(img=img, deg=rotation)
+    #     path = f"data/rotated/{rotation}.jpg"
+    #     cv.imwrite(path, rotated)
+
+    # flipped_x = TransformationHandler.flip_x(img)
+    # path = f"data/flip_x/{0}.jpg"
+    # cv.imwrite(path, flipped_x)
+
+    # flipped_y = TransformationHandler.flip_y(img)
+    # path = f"data/flip_y/{0}.jpg"
+    # cv.imwrite(path, flipped_y)
 
     cv.destroyAllWindows()
