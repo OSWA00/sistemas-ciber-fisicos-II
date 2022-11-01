@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     data = []
-    with open("data/butterfield.txt") as f:
+    with open("data/12.txt") as f:
         for line in f:
             data.append(line.strip())
 
@@ -20,10 +20,8 @@ if __name__ == "__main__":
 
     new_data = np.array(new_data)
 
-    new_data = new_data[50:850]
-    new_data[:75] = new_data[:75] - 10
 
-    reference = np.zeros(len(new_data))
+    reference = np.full(len(new_data), 0.3)
 
     plt.plot(new_data)
     plt.plot(reference)
