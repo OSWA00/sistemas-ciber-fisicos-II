@@ -25,4 +25,8 @@ if __name__ == "__main__":
     # path = f"data/flip_y/{0}.jpg"
     # cv.imwrite(path, flipped_y)
 
+    # flipped_xy = TransformationHandler.flip_xy(img)
+    # path = f"data/flip_xy/{0}.jpg"
+    # cv.imwrite(path, flipped_xy)
+
     cv.destroyAllWindows()

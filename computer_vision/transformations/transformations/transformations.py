@@ -1,6 +1,4 @@
 """Image transformations class implementation"""
-from cmath import cos
-from hashlib import new
 import numpy as np
 
 
@@ -55,8 +53,20 @@ class Transformations:
 
         return new_img
 
-    def flip_X_Y(self, img):
-        pass
+    def flip_xy(self, img):
+        """Flips image over Y and X axis"""
+        height, width, channels = img.shape
+
+        new_img = np.zeros(img.shape)
+
+        for x_cor in range(0, width):
+            for y_cor in range(0, height):
+                for z_cor in range(0, channels):
+                    new_x = y_cor
+                    new_y = x_cor
+                    new_img[new_x, new_y, z_cor] = img[x_cor, y_cor, z_cor]
+
+        return new_img
 
     def translation(self, img, tx, ty):
         pass
