@@ -279,3 +279,17 @@ CATKIN_IGNORE
 butterfield.png
 
 *.lock
+
+control_graph/data/10.txt
+
+control_graph/data/11.txt
+
+control_graph/data/12.txt
+
+control_graph/data/r_1.txt
+
+control_graph/data/r_3.txt
+
+control_graph/data/r_8.txt
+
+control_graph/data/r_delay_1.txt
