@@ -1,6 +1,7 @@
 """Driver program"""
 
 import cv2 as cv
+import os
 from transformations import Transformations
 
 
@@ -10,7 +11,11 @@ if __name__ == "__main__":
     scale_config = [[1, 1], [0.5, 0.5], [2, 0]]
 
     TransformationHandler = Transformations()
-    img = cv.imread("data/logo.png")
+    path = os.path.join("data", "logo.png")
+    img = cv.imread(path)
+
+    # cv.imshow("original", img)
+    # cv.waitKey(0)
 
     # for rotation in rotation_config:
     #     rotated = TransformationHandler.rotation(img=img, deg=rotation)
@@ -28,5 +33,10 @@ if __name__ == "__main__":
     # flipped_xy = TransformationHandler.flip_xy(img)
     # path = f"data/flip_xy/{0}.jpg"
     # cv.imwrite(path, flipped_xy)
+
+    for translation in flip_translation_config:
+        translated = TransformationHandler.translation(img, translation[0], translation[1])
+        cv.imshow("translated", translated)
+        cv.waitKey(0)
 
     cv.destroyAllWindows()

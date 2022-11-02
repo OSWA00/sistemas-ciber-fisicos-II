@@ -69,7 +69,18 @@ class Transformations:
         return new_img
 
     def translation(self, img, tx, ty):
-        pass
+        height, width, channels = img.shape
+        new_img = np.zeros((height + tx, width + ty, channels))
+
+        for x_cor in range(0, width):
+            for y_cor in range(0, height):
+                for z_cor in range(0, channels):
+                    new_x = x_cor + tx
+                    new_y = y_cor + ty
+                    new_img[new_x, new_y, z_cor] = img[x_cor, y_cor, z_cor]
+
+
+        return new_img
 
     def scale(self, img, sx, sy):
         pass
