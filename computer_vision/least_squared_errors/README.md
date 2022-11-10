@@ -2,8 +2,6 @@ Oswaldo E. Hernández Hernández A01274570
 
 # Linear Least Squared Errors #
 
-## Result 1 ##
-
 ![Result 1](./results/0.png "Result 1")
 
 ![Result 2](./results/1.png "Result 2")
