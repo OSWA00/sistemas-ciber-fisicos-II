@@ -7,19 +7,17 @@ if __name__ == "__main__":
     paths = ["01.jpg", "02.png"]
     images = [cv.imread(f"data/{path}", 0) for path in paths]
 
-    harris_detection = [harris_detector(image) for image in images]
-    harris_images = []
-
-    for image, detection in zip(images, harris_detection):
+    for index, image in enumerate(images):
         img_copy = image.copy()
+        detection = harris_detector(image)
+
         threshold = 0.7
-        loc = np.where(detection >= threshold)  #! Maybe this is important
+        loc = np.where(detection >= threshold)
 
         for point in zip(*loc[::-1]):
             cv.circle(img_copy, point, 3, (255, 255, 255), -1)
 
-        harris_images.append(img_copy)
-        cv.imshow("harris", img_copy)
-        cv.waitKey(0)
+        path = f"data/harris/harris_{index}.png"
+        cv.imwrite(path, img_copy)
 
-        cv.destroyAllWindows()
+    cv.destroyAllWindows()
