@@ -2,7 +2,7 @@ import cv2 as cv
 import numpy as np
 
 
-def harris_detector(img: np.array, threshold: float):
+def harris_detector(img: np.array):
     img_copy = img.copy()
 
     dx = cv.Sobel(src=img_copy, ddepth=cv.CV_64F, dx=1, dy=0, ksize=5)
@@ -24,10 +24,4 @@ def harris_detector(img: np.array, threshold: float):
 
     cv.normalize(detection, detection, 0, 1, cv.NORM_MINMAX)
 
-    loc = np.where(detection >= threshold)
-
-    for point in zip(*loc[::-1]):
-        cv.circle(img_copy, point, 3, (255, 255, 255), -1)
-
-    cv.imshow("harris", img_copy)
-    cv.waitKey(0)
+    return detection
